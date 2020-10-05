@@ -105,12 +105,22 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
         PushPlugin.setApplicationIconBadgeNumber(getApplicationContext(), 0);
       }
 
+      String drawerCustomStr = extras.getString(DRAWER_CUSTOM);
       // if we are in the foreground and forceShow is `false` only send data
       if (!forceShow && PushPlugin.isInForeground()) {
         Log.d(LOG_TAG, "foreground");
         extras.putBoolean(FOREGROUND, true);
         extras.putBoolean(COLDSTART, false);
-        PushPlugin.sendExtras(extras);
+        if (drawerCustomStr != null) {
+          Integer drawerCustom = Integer.parseInt(drawerCustomStr);
+          if (drawerCustom == 1) {
+            showNotificationIfPossible(applicationContext, extras);
+          }else {
+            PushPlugin.sendExtras(extras);
+          }
+        }else{
+          PushPlugin.sendExtras(extras);
+        }
       }
       // if we are in the foreground and forceShow is `true`, force show the notification if the data has at least a message or title
       else if (forceShow && PushPlugin.isInForeground()) {
